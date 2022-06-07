@@ -1,6 +1,7 @@
 import express from "express"
 import cors from "cors"
 import dotenv from "dotenv"
+import chalk from "chalk"
 dotenv.config()
 
 import usersRouter from "./src/routes/usersRouter.js"

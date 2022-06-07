@@ -1,4 +1,4 @@
-import connection from "../database.js"
+import connection from "../../database.js"
 import dayjs from "dayjs"
 import bcrypt from "bcrypt"
 
