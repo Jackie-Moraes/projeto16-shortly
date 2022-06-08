@@ -23,20 +23,27 @@ export async function validateSignIn(req, res, next) {
         return res.status(422).send(validation.error)
     }
 
-    const exists = await connection.query(
-        `SELECT * FROM users 
+    try {
+        const exists = await connection.query(
+            `SELECT * FROM users 
         WHERE users.email = $1
         `,
-        [email]
-    )
-    if (!exists.rows[0]) return res.sendStatus(401)
+            [email]
+        )
+        if (!exists.rows[0]) return res.sendStatus(401)
 
-    const passwordCheck = bcrypt.compareSync(password, exists.rows[0].password)
-    if (!passwordCheck) return res.sendStatus(401)
+        const passwordCheck = bcrypt.compareSync(
+            password,
+            exists.rows[0].password
+        )
+        if (!passwordCheck) return res.sendStatus(401)
 
-    res.locals.user = exists.rows[0]
+        res.locals.user = exists.rows[0]
 
-    next()
+        next()
+    } catch (e) {
+        res.status(500).send(e)
+    }
 }
 
 export async function validateURL(req, res, next) {
@@ -63,4 +70,9 @@ export async function validateURL(req, res, next) {
 
     res.locals.user = exists.rows[0]
     next()
+}
+
+export async function validateUrlID(req, res, next) {
+    try {
+    } catch (e) {}
 }
