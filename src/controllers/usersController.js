@@ -42,3 +42,22 @@ export async function signIn(req, res) {
         res.status(500).send(e)
     }
 }
+
+export async function getUserInfo(req, res) {
+    const { id } = req.params
+    const { user } = res.locals
+    try {
+        const query = await connection.query(
+            `SELECT id, "shortUrl", url, visits AS "visitCount" FROM links
+            WHERE "userId" = $1
+            ORDER BY id
+            `,
+            [id]
+        )
+
+        const shortenedUrls = query.rows
+        res.status(200).send({ ...user, shortenedUrls })
+    } catch (e) {
+        res.status(500).send(e)
+    }
+}
