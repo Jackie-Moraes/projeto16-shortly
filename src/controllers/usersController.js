@@ -61,3 +61,21 @@ export async function getUserInfo(req, res) {
         res.status(500).send(e)
     }
 }
+
+export async function getTopUsers(req, res) {
+    try {
+        const query = await connection.query(
+            `SELECT users.id, users.name, COUNT(links.id) "linksCount", COALESCE(SUM(links.visits), 0) "visitCount" FROM users
+            LEFT JOIN links ON links."userId" = users.id
+            GROUP BY users.id
+            ORDER BY "visitCount" DESC
+            LIMIT 10
+            `
+        )
+
+        return res.status(200).send(query.rows)
+    } catch (e) {
+        console.log(e)
+        return res.status(500).send(e)
+    }
+}
