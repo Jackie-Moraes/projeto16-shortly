@@ -107,8 +107,8 @@ export async function validateUser(req, res, next) {
     const { id } = req.params
     try {
         const query = await connection.query(
-            `SELECT users.id, users.name, SUM(links.visits) AS "visitsCount" FROM users
-            JOIN links ON links."userId" = users.id
+            `SELECT users.id, users.name, COALESCE(SUM(links.visits), 0) AS "visitsCount" FROM users
+            LEFT JOIN links ON links."userId" = users.id
             WHERE users.id = $1
             GROUP BY users.id
             `,
