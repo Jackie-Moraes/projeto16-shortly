@@ -66,7 +66,6 @@ export async function redirectToUrl(req, res) {
         const { url } = exists.rows[0]
         return res.redirect(url)
     } catch (e) {
-        console.log(e)
         res.status(500).send(e)
     }
 }
@@ -80,8 +79,6 @@ export async function deleteUrl(req, res) {
             `,
             [id]
         )
-
-        console.log("alo 2")
         return res.sendStatus(204)
     } catch (e) {
         res.status(500).send(e)

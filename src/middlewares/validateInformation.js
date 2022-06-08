@@ -96,10 +96,8 @@ export async function validateUrlDelete(req, res, next) {
         )
         if (!query.rows[0]) return res.sendStatus(404)
         if (query.rows[0].userId !== user.userId) return res.sendStatus(401)
-        console.log("alo")
         next()
     } catch (e) {
-        console.log(e)
         res.status(500).send(e)
     }
 }
