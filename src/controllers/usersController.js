@@ -8,7 +8,7 @@ export async function signUp(req, res) {
     const { email, name, password } = req.body
     try {
         const passwordHash = bcrypt.hashSync(password, 10)
-        const now = dayjs().format("DD/MM/YYYY")
+        const now = dayjs().format("DD/MM/YYYY HH:mm:ss")
         const query = await connection.query(
             `INSERT INTO users (email, name, password, "createdAt") 
             VALUES ($1, $2, $3, $4)`,
@@ -28,7 +28,7 @@ export async function signIn(req, res) {
         const key = process.env.JWT_SECRET
         const tokenConfig = { expiresIn: 60 * 60 * 12 } // Twelve hours
         const token = jwt.sign({ email: email }, key, tokenConfig)
-        const now = dayjs().format("DD/MM/YYYY")
+        const now = dayjs().format("DD/MM/YYYY HH:mm:ss")
 
         const query = await connection.query(
             `INSERT INTO tokens (name, "userId", "createdAt")

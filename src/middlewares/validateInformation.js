@@ -26,8 +26,8 @@ export async function validateSignIn(req, res, next) {
     try {
         const exists = await connection.query(
             `SELECT * FROM users 
-        WHERE users.email = $1
-        `,
+            WHERE users.email = $1
+            `,
             [email]
         )
         if (!exists.rows[0]) return res.sendStatus(401)
@@ -52,27 +52,54 @@ export async function validateURL(req, res, next) {
         return res.status(422).send(validation.error)
     }
 
-    const { authorization } = req.headers
-    const token = authorization?.replace("Bearer ", "").trim()
-    if (!token) return res.sendStatus(401)
-
-    const exists = await connection.query(
-        `SELECT * FROM tokens
-        WHERE tokens.name = $1
-        `,
-        [token]
-    )
-    if (!exists.rows[0]) return res.sendStatus(401)
-
-    const key = process.env.JWT_SECRET
-    const tokenVerification = jwt.verify(token, key)
-    if (!tokenVerification) return res.sendStatus(401)
-
-    res.locals.user = exists.rows[0]
     next()
 }
 
-export async function validateUrlID(req, res, next) {
+export async function validateToken(req, res, next) {
+    const { authorization } = req.headers
+
     try {
-    } catch (e) {}
+        const token = authorization?.replace("Bearer ", "").trim()
+        if (!token) return res.sendStatus(401)
+
+        const exists = await connection.query(
+            `SELECT * FROM tokens
+            WHERE tokens.name = $1
+            `,
+            [token]
+        )
+        if (!exists.rows[0]) return res.sendStatus(401)
+
+        const key = process.env.JWT_SECRET
+        const tokenVerification = jwt.verify(token, key)
+
+        if (!tokenVerification) return res.sendStatus(401)
+
+        res.locals.user = exists.rows[0]
+
+        next()
+    } catch (e) {
+        res.status(500).send(e)
+    }
+}
+
+export async function validateUrlDelete(req, res, next) {
+    const { id } = req.params
+    const { user } = res.locals
+
+    try {
+        const query = await connection.query(
+            `SELECT * FROM links
+            WHERE id = $1
+            `,
+            [id]
+        )
+        if (!query.rows[0]) return res.sendStatus(404)
+        if (query.rows[0].userId !== user.userId) return res.sendStatus(401)
+        console.log("alo")
+        next()
+    } catch (e) {
+        console.log(e)
+        res.status(500).send(e)
+    }
 }

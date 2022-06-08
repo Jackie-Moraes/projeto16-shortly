@@ -1,7 +1,12 @@
 import { Router } from "express"
 
-import { validateURL } from "../middlewares/validateInformation.js"
 import {
+    validateToken,
+    validateURL,
+    validateUrlDelete,
+} from "../middlewares/validateInformation.js"
+import {
+    deleteUrl,
     getUrlById,
     redirectToUrl,
     shortenURL,
@@ -9,8 +14,9 @@ import {
 
 const urlsRouter = Router()
 
-urlsRouter.post("/urls/shorten", validateURL, shortenURL)
+urlsRouter.post("/urls/shorten", validateURL, validateToken, shortenURL)
 urlsRouter.get("/urls/:id", getUrlById)
 urlsRouter.get("/urls/open/:shortUrl", redirectToUrl)
+urlsRouter.delete("/urls/:id", validateToken, validateUrlDelete, deleteUrl)
 
 export default urlsRouter
